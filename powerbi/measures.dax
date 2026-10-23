@@ -1,0 +1,23 @@
+// DAX measures mirroring sql/03_kpis.sql. Model: fct_orders_sample[customer_id] -> dim_customer_sample[customer_id];
+// fct_order_items_sample[product_id] -> dim_product; [seller_id] -> dim_seller; fct_*[date_key] -> dim_date[date_key];
+// fct_leads[mql_id] -> dim_lead[mql_id] (1:1); fct_leads[date_key] -> dim_date (inactive if order date active).
+Realised Orders = CALCULATE ( COUNTROWS ( fct_orders_sample ), NOT fct_orders_sample[order_status] IN { "canceled", "unavailable" }, fct_orders_sample[n_items] > 0 )
+GMV = CALCULATE ( SUM ( fct_orders_sample[item_revenue] ), NOT fct_orders_sample[order_status] IN { "canceled", "unavailable" } )
+AOV = DIVIDE ( [GMV], [Realised Orders] )
+Basket Size = CALCULATE ( AVERAGE ( fct_orders_sample[n_items] ), NOT fct_orders_sample[order_status] IN { "canceled", "unavailable" }, fct_orders_sample[n_items] > 0 )
+Customers = CALCULATE ( DISTINCTCOUNT ( fct_orders_sample[customer_unique_id] ), NOT fct_orders_sample[order_status] IN { "canceled", "unavailable" }, fct_orders_sample[n_items] > 0 )
+Repeat Rate =
+VAR c = ADDCOLUMNS ( VALUES ( fct_orders_sample[customer_unique_id] ), "n", [Realised Orders] )
+RETURN DIVIDE ( COUNTROWS ( FILTER ( c, [n] > 1 ) ), COUNTROWS ( FILTER ( c, [n] >= 1 ) ) )
+Late Rate = DIVIDE ( CALCULATE ( COUNTROWS ( fct_orders_sample ), fct_orders_sample[is_late] = TRUE (), fct_orders_sample[order_status] = "delivered" ),
+                     CALCULATE ( COUNTROWS ( fct_orders_sample ), NOT ISBLANK ( fct_orders_sample[is_late] ), fct_orders_sample[order_status] = "delivered" ) )
+Avg Review = AVERAGE ( fct_orders_sample[review_score] )
+MQLs = COUNTROWS ( fct_leads )
+Won Deals = SUM ( fct_leads[won] )
+MQL to Won % = DIVIDE ( [Won Deals], [MQLs] )
+Acquired Seller GMV = SUM ( fct_leads[seller_gmv] )
+GMV per MQL = DIVIDE ( [Acquired Seller GMV], [MQLs] )
+// SCENARIO ONLY - not in the data. Bind to a What-If parameter 'Assumed CPL'[Assumed CPL Value]
+Scenario Spend = [MQLs] * SELECTEDVALUE ( 'Assumed CPL'[Assumed CPL Value], 100 )
+Scenario CPA = DIVIDE ( [Scenario Spend], [Won Deals] )
+Scenario GMV per BRL Spend = DIVIDE ( [Acquired Seller GMV], [Scenario Spend] )

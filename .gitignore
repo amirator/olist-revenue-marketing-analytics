@@ -1,0 +1,6 @@
+.venv/
+data/raw/
+data/*.duckdb
+data/*.wal
+__pycache__/
+.pytest_cache/
