@@ -46,7 +46,7 @@ def main():
     ax2.set_ylabel("late %", color=RED, fontsize=8)
     ax.set_title("GMV (BRL M) and late-delivery % by state", loc="left", color=NAVY, weight="bold", fontsize=10); ax.tick_params(labelsize=8)
     fig.text(0.05, 0.015, "Source: Brazilian E-Commerce Public Dataset by Olist + Marketing Funnel by Olist (CC BY-NC-SA 4.0). Realised = not canceled/unavailable. "
-             "No ad-spend data: CPL/CPA are scenario-only (see README). Built by Mohammad Amir Khan with DuckDB SQL + Python.", fontsize=8, color="#555")
+             "No ad-spend data: CPL/CPA are scenario-only (see README). Built by Amir Khan with DuckDB SQL + Python.", fontsize=8, color="#555")
     out = ROOT / "reports"
     fig.savefig(out / "scorecard.png", dpi=110); fig.savefig(out / "scorecard.pdf"); plt.close(fig)
     b64 = base64.b64encode((out / "scorecard.png").read_bytes()).decode()

@@ -99,4 +99,4 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 - GMV is nominal BRL with no inflation or FX adjustment.
 
 ## Author
-Mohammad Amir Khan · [github.com/amirator](https://github.com/amirator). A personal portfolio project, not commissioned by or affiliated with Olist.
+Amir Khan · [github.com/amirator](https://github.com/amirator). A personal portfolio project, not commissioned by or affiliated with Olist.
